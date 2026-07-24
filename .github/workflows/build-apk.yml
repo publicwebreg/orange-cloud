@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/android/*'
+      - 'apps/android/**'
 
 jobs:
   build:
@@ -13,24 +13,26 @@ jobs:
     defaults:
       run:
         working-directory: apps/android
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 17
           distribution: temurin
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Create local.properties
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      - name: Build OSS Debug APK
+        run: ./gradlew :app:assembleOssDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
